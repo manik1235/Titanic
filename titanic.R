@@ -98,3 +98,4 @@ ggplot(data.combined[1:891,], aes(x = Title, fill = Survived)) +
   xlab("Title") +
   ylab("Total Count") +
   labs(fill = "Survived")
+
