@@ -37,3 +37,64 @@ ggplot(train, aes(x = Pclass, fill = factor(Survived))) +
 # Examine the first few names in the training data set
 head(as.character(train$Name))
 
+# How many unique names are there across both train & test?
+length(unique(as.character(data.combined$Name)))
+
+# Two duplicate names, take a closer look
+# First get the duplicate names and store them as a vector
+dup.name <- as.character(data.combined[which(duplicated(as.character(data.combined$Name))), "Name"])
+
+# Next, take a look at the records in the combined data set
+data.combined[which(data.combined$Name %in% dup.name),2]
+
+# What is up with the "Miss." and "Mr." thing?
+library(stringr)
+
+# Any correlation with other variables (e.g. sibsp)?
+misses <- data.combined[which(str_detect(data.combined$Name, "Miss.")),]
+misses[1:5,]
+
+# Hypothesis - Name titles correlate with age
+mrses <- data.combined[which(str_detect(data.combined$Name, "Mrs.")),]
+mrses[1:5,]
+
+# Check out males to see if pattern continues
+males <- data.combined[which(data.combined$Sex == 'male'),]
+males[1:5,]
+#length(males)
+#males
+#nrow(males)
+
+# Expand upon the relationships between Survived, Pclass by creating a new 'Title' variable to the
+# data set and the explore a potential 3-dimensional relationship.
+extractTitle <- function(Name) {
+  Name <- as.character(Name)
+  
+  if (length(grep("Miss.", Name)) > 0) {
+    return ("Miss.")
+  } else if (length(grep("Master.", Name)) > 0) {
+    return ("Master.")
+  } else if (length(grep("Mrs.", Name)) > 0) {
+    return ("Mrs.")
+  } else if (length(grep("Mr.", Name)) > 0) {
+    return ("Mr.")
+  } else {
+    return ("Other")
+  }
+}
+
+titles <- NULL
+for (i in 1:nrow(data.combined)) {
+  titles <- c(titles, extractTitle(data.combined[i, "Name"]))
+}
+data.combined$Title <- as.factor(titles)
+
+# Since we only have survived lables for the train set, only use the 
+# first 891 rows
+ggplot(data.combined[1:891,], aes(x = Title, fill = Survived)) +
+  geom_bar(stat = "count") +
+  facet_wrap(~Pclass) +
+  ggtitle("Pclass") +
+  xlab("Title") +
+  ylab("Total Count") +
+  labs(fill = "Survived")
