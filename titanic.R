@@ -99,3 +99,39 @@ ggplot(data.combined[1:891,], aes(x = Title, fill = Survived)) +
   ylab("Total Count") +
   labs(fill = "Survived")
 
+# Check out embarked
+ggplot(data.combined[1:891,], aes(x = Title, fill = Survived)) +
+  geom_bar(stat = "count") +
+  facet_wrap(~Embarked) +
+  ggtitle("Embarked") +
+  xlab("Title") +
+  ylab("Total Count") +
+  labs(fill = "Survived")
+
+# Look at the IndivFare
+# IndivFare <- SibSp + Parch + 1
+# Because the Fare represents their ticket + everyone
+# they are traveling with.
+IndivFare <- data.combined$Fare / (data.combined$SibSp + data.combined$Parch + 1)
+IndivFare.rounded <- floor(IndivFare)
+data.combined$IndivFareRounded <- as.integer(IndivFare.rounded)
+data.combined$IndivFare <- as.double(IndivFare)
+                       
+# Plot the individual fare (rounded) and survival rate.
+ggplot(data.combined[1:891,], aes(x = IndivFareRounded, fill = Survived)) +
+  geom_freqpoly(stat = "count") +
+  ggtitle("survival by fare") +
+  xlab("Fare (rounded)") +
+  ylab("Total Count") +
+  labs(fill = "Survived")
+
+
+          
+ggplot(data.combined[1:891,], aes(x = Title, fill = Survived)) +
+  geom_bar(stat = "count") +
+  facet_wrap(~Embarked) +
+  ggtitle("Embarked") +
+  xlab("Fare") +
+  ylab("Total Count") +
+  labs(fill = "Survived")
+
